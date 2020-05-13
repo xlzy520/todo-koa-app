@@ -20,7 +20,7 @@ class AttendanceModel{
       class_id,
       userId,
       comment,
-      ana,
+      // ana,
       isAttend,
       date
     },{
