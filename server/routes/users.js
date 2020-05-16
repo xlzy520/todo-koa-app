@@ -18,7 +18,8 @@ router.post('/login', UserController.login);
 // // 获取用户信息
 router.get('/info', UserController.getUserInfo);
 // 获取用户列表
-router.get('/list', UserController.getUserList);
-router.get('/updatePwd', UserController.updatePwd);
+router.post('/list', UserController.getUserList);
+router.post('/resetPassword', UserController.resetPassword);
+router.post('/getQuestion', UserController.getQuestion);
 
 module.exports = router

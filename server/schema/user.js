@@ -7,10 +7,6 @@ module.exports = function (sequelize, DataTypes) {
       primaryKey: true,
       autoIncrement: true
     },
-    username: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
     password: {
       type: DataTypes.STRING(255),
       allowNull: false
@@ -52,10 +48,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: false
     },
     // 团队Id
-    // team_id: {
-    //   type: DataTypes.INTEGER(11),
-    //   allowNull: false,
-    // },
+    team_id: {
+      type: DataTypes.INTEGER(11),
+      allowNull: true,
+    },
     // age: {
     //   type: DataTypes.INTEGER(20),
     //   allowNull: true,

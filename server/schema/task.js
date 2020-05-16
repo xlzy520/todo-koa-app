@@ -13,39 +13,40 @@ module.exports = function (sequelize, DataTypes) {
     },
     desc: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     priority: {
       type: DataTypes.STRING(50),
       allowNull: false
     },
-    type: {
+    priorityColor: {
       type: DataTypes.STRING(50),
       allowNull: false
+    },
+    // 类型，标签
+    tags: {
+      type: DataTypes.STRING(50),
+      allowNull: true
     },
     start: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     end: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true
     },
     userId: {
       type: DataTypes.INTEGER(11),
       allowNull: false
     },
-    username: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    sort: {
+    sortIndex: {
       type: DataTypes.INTEGER(50),
       allowNull: false
     },
     isDeleted: {
       type: DataTypes.TINYINT(0),
-      allowNull: false
+      allowNull: true
     },
     // teamName: {
     //   type: DataTypes.STRING(50),

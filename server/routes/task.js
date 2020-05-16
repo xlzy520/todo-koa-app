@@ -6,8 +6,8 @@ router.prefix('/task')
 
 
 router.post('/add', TaskController.add);
-router.get('/delete', TaskController.delete);
-router.get('/update', TaskController.update);
-router.get('/list', TaskController.list);
+router.post('/delete', TaskController.delete);
+router.post('/update', TaskController.update);
+router.post('/list', TaskController.list);
 
 module.exports = router;

@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs'); // 密码加密
 const jwt = require('jsonwebtoken'); // 签发token给前端
+const koajwt = require('koa-jwt')
 const secret = require('../config/secret');
 const userModel = require('../modules/user');
 const statusCode = require('../utils/status-code');
@@ -15,6 +16,7 @@ class UserController {
    */
   static async register(ctx, next) {
     const user = ctx.request.body;
+
     const { username } = user
     if (username) {
       // 查询用户名是否重复
@@ -27,7 +29,7 @@ class UserController {
         // 加密密码
         const salt = bcrypt.genSaltSync();  // 密码加密的计算强度默认10级
         const hash = bcrypt.hashSync(user.password, salt);
-        user.pwd = hash;
+        user.password = hash;
         
         // 创建用户
         await userModel.create(user);
@@ -88,35 +90,32 @@ class UserController {
    */
   static async login(ctx, next) {
     const data = ctx.request.body;
-    const {username, password} = data
+    const {phone, password} = data
     // 查询用户是否存在
-    const user = await userModel.findUserByName(username);
+    const user = await userModel.findUserByPhone(phone);
     // 查询用户密码是否正确
-    if (user[0]) {
-      
-      if (bcrypt.compareSync(password, user[0].pwd)) {
+    if (user) {
+      if (bcrypt.compareSync(password, user.password)) {
         const userToken = {
-          username: username,
-          id: user[0].id
+          phone,
+          id: user.id
         }
         // 签发token
         const token = jwt.sign(userToken, secret.sign, {expiresIn: '1h'});
         
         ctx.response.status = 200;
-        ctx.body = statusCode.SUCCESS_200('登录成功', {
-          id: user[0].id,
-          username: username,
+        ctx.body = result({
+          id: user.id,
+          phone,
           token: token
-        })
+        }, '登录成功')
       } else {
-        
-        ctx.response.status = 412;
-        ctx.body = statusCode.ERROR_412('用户名或密码错误');
+        ctx.body = result(null, '用户名或密码错误', false);
       }
     } else {
       
-      ctx.response.status = 403;
-      ctx.body = statusCode.ERROR_403('用户不存在');
+      // ctx.response.status = 403;
+      ctx.body = result(null, '用户不存在', false);
     }
   }
   
@@ -130,24 +129,37 @@ class UserController {
     }
   }
   
-  static async updatePwd(ctx, next) {
-    // let userList = ctx.request.body;
-    // if (userList) {
-    //     const data = await userModel.findAllUserList();
-    
-    //     ctx.response.status = 200;
-    //     ctx.body = statusCode.SUCCESS_200('查询成功', data)
-    // } else {
-    
-    //     ctx.response.status = 412;
-    //     ctx.body = statusCode.ERROR_412('获取失败')
-    
-    // }
-    let data = await userModel.findAllUserList();
-    
-    
-    ctx.response.status = 200;
-    ctx.body = statusCode.SUCCESS_200('查询成功', data)
+  static async getQuestion(ctx, next) {
+    const { phone } = ctx.request.body;
+    const userInfo = await userModel.findUserByPhone(phone)
+    if (userInfo) {
+      const question = userInfo.question
+      ctx.body = result({
+        question
+      }, '查询成功')
+    } else {
+      ctx.body = result(null, error_msg.phone_not_exist, false)
+    }
+  }
+  
+  static async resetPassword(ctx, next) {
+    let { phone, answer, newPassword } = ctx.request.body;
+    if (!newPassword) {
+      ctx.body = result(null, error_msg.password_null, false)
+    }
+    const userInfo = await userModel.findUserByPhone(phone)
+    if (userInfo) {
+      if (answer === userInfo.answer) {
+        const salt = bcrypt.genSaltSync();  // 密码加密的计算强度默认10级
+        const hash = bcrypt.hashSync(newPassword, salt);
+        await userModel.resetPassword(userInfo, hash)
+        ctx.body = result()
+      } else {
+        ctx.body = result(null, error_msg.answer_error, false)
+      }
+    } else {
+      ctx.body = result(null, error_msg.phone_not_exist, false)
+    }
   }
   
   static async getUserByName(ctx, next) {
