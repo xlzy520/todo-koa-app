@@ -8,8 +8,10 @@ class TaskController {
   static async add(ctx, next){
     const task = ctx.request.body;
     if(task) {
+      task.status = 0
       await taskModel.create(task)
-      ctx.body = result(null, '新增待办事项成功')
+      const data = ctx.state.user;
+      ctx.body = result(data, '新增待办事项成功')
       // let teamN = await teamModel.findClassByName(teamName);
       // teamN.map(x => x.get({plaint:true}))
       //

@@ -44,6 +44,10 @@ module.exports = function (sequelize, DataTypes) {
       type: DataTypes.INTEGER(50),
       allowNull: false
     },
+    status: {
+      type: DataTypes.TINYINT(0),
+      allowNull: false,
+    },
     isDeleted: {
       type: DataTypes.TINYINT(0),
       allowNull: true

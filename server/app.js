@@ -3,6 +3,7 @@ const app = new Koa()  // 第一步:创建实例
 const cors = require('koa-cors');
 const views = require('koa-views')
 const json = require('koa-json')
+const jwt = require('jsonwebtoken')
 const koajwt = require('koa-jwt')
 const onerror = require('koa-onerror')
 const bodyparser = require('koa-bodyparser')
@@ -12,6 +13,8 @@ const logger = require('koa-logger')
 // const teamRouter = require('./routes/team')
 const users = require('./routes/users')
 const task = require('./routes/task')
+
+const SECRET = 'secret'; // demo，可更换
 
 // error handler
 onerror(app)
@@ -38,6 +41,20 @@ app.use(async (ctx, next) => {
   // console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
 
+app.use(async(ctx, next)=> {
+  var token = ctx.headers.authorization;
+  if(!token){
+    await next();
+  }else{
+    const userInfo = jwt.verify(token.split(' ')[1], SECRET)
+    console.log(userInfo);
+    ctx.state = {
+      userInfo
+    };
+    await next();
+  }
+})
+
 // 中间件对token进行验证
 app.use(async (ctx, next) => {
   return next().catch((err) => {
@@ -45,7 +62,7 @@ app.use(async (ctx, next) => {
       ctx.status = 401;
       ctx.body = {
         code: 401,
-        msg: err.message
+        msg: '登录过期，请重新登录'
       }
     } else {
       throw err;
@@ -53,8 +70,8 @@ app.use(async (ctx, next) => {
   })
 });
 
-const SECRET = 'secret'; // demo，可更换
-app.use(koajwt({ secret: SECRET, passthrough: true }).unless({
+// const SECRET = 'secret'; // demo，可更换
+app.use(koajwt({ secret: SECRET}).unless({
   // 登录，注册接口不需要验证
   path: [/^\/user\/login/, /^\/user\/register/]
 }));
