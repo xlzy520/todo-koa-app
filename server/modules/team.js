@@ -1,36 +1,115 @@
 const sequelize= require('../config/db');
-const teamList = sequelize.import('../schema/team');
+const Team = sequelize.import('../schema/team');
+const TeamUser = sequelize.import('../schema/team-user');
+const Op = sequelize.Op;
 // 通过 sync 方法同步数据结构
 // 即,创建表
-teamList.sync({force: false})
+Team.sync({force: false})
+
+Team.belongsTo(TeamUser, { foreignKey: 'id', targetKey: 'teamId' });
 
 
-class ClassModel{
-  /**
-   * 创建班级
-   * @returns {Promise<boolean>}
-  */
-  static async create(className){
-    return await teamList.create({
-      className
-    })
+class TeamModel{
+  static async createTeam(team){
+    return await Team.create(team)
   }
-  /**
-   * 指定班级名查找
-   */
-  static async findClassByName(className){
-
-    return await teamList.findAll({
+  
+  static async findTeamById(id){
+    return await Team.find({
       where:{
-        className
+        id,
+        isDeleted: false
       },
+      raw: true
     })
   }
-   /**
-   * 查找班级列表
-   */
-  static async fincClasslist(className){
-    return await teamList.findAll()
+  
+  static async findJoinTeam(userId){
+    return await Team.findAll({
+      attributes: {
+        exclude: ['password'],
+        include: [[sequelize.fn('COUNT', 'team-user.teamId'), 'count']]
+      },
+      where:{
+        // teamId,
+        isDeleted: false
+      },
+      include:[{
+        model: TeamUser,
+        where:{
+          userId,
+          isDeleted: false
+        },
+        // through: {
+        //   // attributes: ['createdAt', 'startedAt', 'finishedAt'], //过滤属性
+        //   where: {userId}
+        // }
+      }],
+      raw: true
+    })
+  }
+  
+  
+  static async findTeamByName(teamName){
+    return await Team.find({
+      where:{
+        teamName,
+        isDeleted: false
+      },
+      raw: true
+    })
+  }
+  
+  static async searchTeamByName(teamName){
+    return await Team.findAll({
+      attributes: ['teamName', 'id', 'desc'],
+      where:{
+        teamName: {
+          [Op.like]:'%' +teamName + '%'
+        },
+        isDeleted: false
+      },
+      raw: true
+    })
+  }
+  
+  static async findTeamByNameAndUser(name, userId){
+    return await Team.find({
+      where:{
+        name,
+        userId,
+        isDeleted: false
+      },
+      raw: true
+    })
+  }
+  
+  static async findTeam(userId){
+    return await Team.findAll({
+      where: {
+        isDeleted: false,
+        owner: userId
+      }
+    })
+  }
+  
+  static async updateTeam(tag){
+    const id = tag.id
+    return await Team.update(tag,{
+      where:{
+        id
+      }
+    })
+  }
+  
+  static async deleteTeam(tag){
+    tag.isDeleted = '1'
+    return await Team.update(tag,{
+      where:{
+        id: task.id
+      }
+    })
   }
 }
-module.exports =  ClassModel
+module.exports =  TeamModel
+

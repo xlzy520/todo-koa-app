@@ -45,7 +45,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     isDeleted: {
       type: DataTypes.TINYINT(0),
-      allowNull: false
+      allowNull: true,
+      defaultValue: false
     },
     // 团队Id
     team_id: {

@@ -50,7 +50,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     isDeleted: {
       type: DataTypes.TINYINT(0),
-      allowNull: true
+      allowNull: true,
+      defaultValue: false
     },
     // teamName: {
     //   type: DataTypes.STRING(50),

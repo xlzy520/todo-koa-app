@@ -10,7 +10,7 @@ const bodyparser = require('koa-bodyparser')
 const logger = require('koa-logger')
 
 // const attendance = require('./routes/attendance')
-// const teamRouter = require('./routes/team')
+const teamRouter = require('./routes/team')
 const users = require('./routes/users')
 const task = require('./routes/task')
 
@@ -36,7 +36,17 @@ app.use(views(__dirname + '/views', {
 // logger
 app.use(async (ctx, next) => {
   const start = new Date()
-  await next()
+  await next().catch(err=>{
+    if (err.message === 'jwt expired') {
+      ctx.body = {
+        code: 401,
+        msg: '登录过期，请重新登录',
+        success: false
+      }
+    } else {
+      throw err;
+    }
+  })
   const ms = new Date() - start
   // console.log(`${ctx.method} ${ctx.url} - ${ms}ms`)
 })
@@ -61,8 +71,8 @@ app.use(async (ctx, next) => {
     if (err.status === 401) {
       ctx.status = 401;
       ctx.body = {
-        code: 401,
-        msg: '登录过期，请重新登录'
+        msg: '登录过期，请重新登录',
+        success: false
       }
     } else {
       throw err;
@@ -73,12 +83,12 @@ app.use(async (ctx, next) => {
 // const SECRET = 'secret'; // demo，可更换
 app.use(koajwt({ secret: SECRET}).unless({
   // 登录，注册接口不需要验证
-  path: [/^\/user\/login/, /^\/user\/register/]
+  path: [/^\/user\/login/, /^\/user\/register/,/^\/user\/getQuestion/, /^\/user\/getQuestion/]
 }));
 
 // routes
 // app.use(attendance.routes(), attendance.allowedMethods())
-// app.use(teamRouter.routes(), teamRouter.allowedMethods())
+app.use(teamRouter.routes(), teamRouter.allowedMethods())
 app.use(users.routes(), users.allowedMethods())
 app.use(task.routes(), task.allowedMethods())
 

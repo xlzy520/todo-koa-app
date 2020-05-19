@@ -1,32 +1,28 @@
 const moment = require('moment');
 module.exports = function (sequelize, DataTypes) {
-  return sequelize.define('team', {
+  return sequelize.define('tags', {
     id: {
       type: DataTypes.INTEGER(11),
       allowNull: false,
       primaryKey: true,
       autoIncrement: true
     },
-    teamName: {
+    name: {
       type: DataTypes.STRING(50),
       allowNull: false
     },
-    password: {
+    color: {
       type: DataTypes.STRING(50),
       allowNull: false
-    },
-    desc: {
-      type: DataTypes.STRING(50),
-      allowNull: false
-    },
-    owner: {
-      type: DataTypes.INTEGER(11),
-      allowNull: false,
     },
     isDeleted: {
       type: DataTypes.TINYINT(0),
       allowNull: true,
       defaultValue: false
+    },
+    userId: {
+      type: DataTypes.INTEGER(11),
+      allowNull: false,
     },
     createdAt: {
       type: DataTypes.DATE,

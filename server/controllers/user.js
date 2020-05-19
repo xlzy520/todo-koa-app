@@ -17,13 +17,12 @@ class UserController {
   static async register(ctx, next) {
     const user = ctx.request.body;
 
-    const { username } = user
-    if (username) {
+    const { phone } = user
+    if (phone) {
       // 查询用户名是否重复
-      const existUser = await userModel.findUserByName(username)
+      const existUser = await userModel.findUserByPhone(phone)
       if (existUser && existUser.length !== 0) {
         // 反馈存在用户名
-        // ctx.response.status = 200;
         ctx.body = result(null, error_msg.USER_EXIST, false)
       } else {
         // 加密密码
@@ -33,12 +32,12 @@ class UserController {
         
         // 创建用户
         await userModel.create(user);
-        let newUser = await userModel.findUserByName(username)
+        let newUser = await userModel.findUserByPhone(phone)
         // newUser = newUser.map(x => x.get({plain:true})) // 等价于 JSON.parse(JSON.stringify(newUser) // 等价于查询语句加 raw: true
         
         // 签发token
         const userToken = {
-          username,
+          phone,
           id: newUser.id
         }
         
@@ -120,8 +119,7 @@ class UserController {
   }
   
   static async getUserInfo(ctx, next) {
-    const username = '执笔'
-    let userInfo = await userModel.findUserByName(username)
+    let userInfo = await userModel.getUserInfo(ctx.state.user.phone)
     if (userInfo) {
       ctx.body = result(userInfo, '查询成功')
     } else {
@@ -160,30 +158,6 @@ class UserController {
     } else {
       ctx.body = result(null, error_msg.phone_not_exist, false)
     }
-  }
-  
-  static async getUserByName(ctx, next) {
-    // let userList = ctx.request.body;
-    // if (userList) {
-    //     const data = await userModel.findAllUserList();
-    
-    //     ctx.response.status = 200;
-    //     ctx.body = statusCode.SUCCESS_200('查询成功', data)
-    // } else {
-    
-    //     ctx.response.status = 412;
-    //     ctx.body = statusCode.ERROR_412('获取失败')
-    
-    // }
-    const username = '执笔'
-    let userInfo = await userModel.findUserByName(username)
-    if (userInfo) {
-      ctx.body = result(userInfo, '查询成功')
-    } else {
-      ctx.body = result(null, error_msg.USER_INFO_NOT_EXIST, false)
-    }
-    
-    // ctx.response.status = 200;
   }
   
 }

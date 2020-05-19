@@ -17,7 +17,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     isDeleted: {
       type: DataTypes.TINYINT(0),
-      allowNull: false
+      allowNull: true,
+      defaultValue: false
     },
     createdAt: {
       type: DataTypes.DATE,

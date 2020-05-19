@@ -20,6 +20,16 @@ class UserModel{
       raw: true  // 直接返回js object对象
     })
   }
+  
+  static async getUserInfo(phone){
+    return await User.find({
+      attributes: { exclude: ['password', 'question', 'answer'] },
+      where:{
+        phone
+      },
+      raw: true  // 直接返回js object对象
+    })
+  }
 
   /**
    * 创建用户
@@ -57,7 +67,6 @@ class UserModel{
       }
     })
   }
-  
   
   static async findAllUserList(){
     return  await User.findAll({

@@ -7,30 +7,15 @@ const result = require('../utils/result');
 class TaskController {
   static async add(ctx, next){
     const task = ctx.request.body;
+    const user = ctx.state.user;
     if(task) {
       task.status = 0
+      task.userId = user.id
+      task.sortIndex = 1
+      task.tags = task.tags.join(',')
       await taskModel.create(task)
-      const data = ctx.state.user;
-      ctx.body = result(data, '新增待办事项成功')
-      // let teamN = await teamModel.findClassByName(teamName);
-      // teamN.map(x => x.get({plaint:true}))
-      //
-      // if(teamN && teamN.length!=0) {
-      //
-      //   ctx.response.status = 200;
-      //   ctx.body = {msg:'班级名已存在,请尝试创建新的班级',code:405}
-      //
-      // }else {
-      //
-      //   await teamModel.create(teamName)
-      //
-      //   ctx.response.status = 200;
-      //   ctx.body = statusCode.SUCCESS_200('创建成功', {
-      //     teamName,
-      //   })
-      // }
+      ctx.body = result(null, '新增待办事项成功')
     }else {
-      
       ctx.body = result(null, '缺少参数', false)
     }
     
@@ -39,13 +24,11 @@ class TaskController {
   static async delete(ctx){
     const { id } = ctx.request.body;
     let task = await taskModel.findTaskById(id);
-    // task = task[0]
-    // console.log(task[0]);
     if (task) {
       task.isDeleted = '1'
-      const task1 = await taskModel.updateTask(task);
+      const newTask = await taskModel.updateTask(task);
       ctx.body = result({
-        task,
+        task: newTask,
       }, '删除成功')
     } else {
       ctx.body = result(null, '删除失败，任务不存在', false)
@@ -54,12 +37,10 @@ class TaskController {
   
   static async update(ctx){
     const newTask = ctx.request.body;
-  
-    const task = await taskModel.updateTask(newTask);
-    
+    await taskModel.updateTask(newTask);
     ctx.body = result({
-      task,
-    }, '修改成功')
+      task: newTask,
+    }, '更新成功')
   }
   
   static async list(ctx){
