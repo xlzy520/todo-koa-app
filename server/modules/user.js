@@ -1,9 +1,14 @@
 const sequelize= require('../config/db');
 const User = sequelize.import('../schema/user');
 const TeamModule = sequelize.import('../schema/team');
+const TeamUser = sequelize.import('../schema/team-user');
 const _ =  require('lodash')
 
-User.belongsTo(TeamModule, {foreignKey:'team_id'});  // 班级1:n学生的关系
+User.belongsToMany(TeamModule, {  through: {
+    model: TeamUser,
+    unique: false,
+  },  foreignKey: 'userId', //通过外键postId
+  constraints: false });
 
 // 通过 sync 方法同步数据结构
 // 即,创建表

@@ -28,6 +28,20 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
       defaultValue: false
     },
+    startTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      get() {
+        return moment(this.getDataValue('startTime')).format('YYYY-MM-DD hh:mm:ss');
+      }
+    },
+    endTime: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      get() {
+        return moment(this.getDataValue('endTime')).format('YYYY-MM-DD hh:mm:ss');
+      }
+    },
     createdAt: {
       type: DataTypes.DATE,
       get() {

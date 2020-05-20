@@ -13,7 +13,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     desc: {
       type: DataTypes.STRING(50),
-      allowNull: true
+      allowNull: true,
+      defaultValue: ''
     },
     priority: {
       type: DataTypes.STRING(50),
@@ -21,7 +22,8 @@ module.exports = function (sequelize, DataTypes) {
     },
     priorityColor: {
       type: DataTypes.STRING(50),
-      allowNull: false
+      allowNull: true,
+      defaultValue: ''
     },
     // 类型，标签
     tags: {
@@ -30,11 +32,13 @@ module.exports = function (sequelize, DataTypes) {
     },
     start: {
       type: DataTypes.STRING(50),
-      allowNull: true
+      allowNull: true,
+      defaultValue: ''
     },
     end: {
       type: DataTypes.STRING(50),
-      allowNull: true
+      allowNull: true,
+      defaultValue: ''
     },
     userId: {
       type: DataTypes.INTEGER(11),
@@ -47,6 +51,7 @@ module.exports = function (sequelize, DataTypes) {
     status: {
       type: DataTypes.TINYINT(0),
       allowNull: false,
+      defaultValue: false
     },
     isDeleted: {
       type: DataTypes.TINYINT(0),

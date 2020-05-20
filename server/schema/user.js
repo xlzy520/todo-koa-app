@@ -48,15 +48,10 @@ module.exports = function (sequelize, DataTypes) {
       allowNull: true,
       defaultValue: false
     },
-    // 团队Id
-    team_id: {
-      type: DataTypes.INTEGER(11),
+    avatar: {
+      type: DataTypes.STRING(255),
       allowNull: true,
     },
-    // age: {
-    //   type: DataTypes.INTEGER(20),
-    //   allowNull: true,
-    // },
     // sex: {
     //   type: DataTypes.STRING(20),
     //   allowNull: true,

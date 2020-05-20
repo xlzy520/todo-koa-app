@@ -12,5 +12,6 @@ router.post('/myTeams', TeamController.myTeams);
 router.post('/search', TeamController.search);
 router.post('/join', TeamController.joinTeam);
 router.post('/teammates', TeamController.getTeammates);
+router.post('/getTeamInfo', TeamController.getTeamInfo);
 
 module.exports = router;

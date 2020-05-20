@@ -20,27 +20,29 @@ class TaskModel{
     })
   }
 
-  static async findTaskByName(className){
+  static async findTaskByName(name){
     return await TaskList.findAll({
       where:{
-        className
+        name
       },
     })
   }
   
-  static async findTaskList(){
+  static async findTaskList(conditions){
     return await TaskList.findAll({
       where: {
-        isDeleted: null
-      }
+        isDeleted: false,
+        ...conditions
+      },
+      order:  [
+        ['status'],
+        ['priority']
+      ],
     })
   }
   
   static async updateTask(task){
     const id = task.id
-    task.userId = '1'
-    task.sortIndex = 1
-    task.tags = (task.tags?task.tags : []).join(',')
     return await TaskList.update(task,{
       where:{
         id

@@ -55,16 +55,34 @@ class TeamController {
   static async myTeams(ctx){
     const user = ctx.state.user;
     const list = await teamModel.findJoinTeam(user.id);
-    // const countList = list.map(async l => {
+    // console.log(list[0]);
+    // for (let i = 0; i < list.length; i++) {
+    //   list[i].count = await teamUserModel.count({where: {'teamId': list[i].id}})
+    // }
+    // const countList = await list.map(async l => {
+    //   // console.log(l);
+    //   l.count =
+    //   // console.log(l.count);
     //   console.log(l);
-    //   l.count = await teamUserModel.count({where: {'teamId': l.id}})
-    //   console.log(l.count);
     //   return l
     // })
+    // console.log(65, countList);
     // const joinList = await teamModel.
     ctx.body = result({
       list
     }, '查询成功')
+  }
+  
+  static async getTeamInfo(ctx){
+    const user = ctx.state.user;
+    const {id} = ctx.request.body;
+    const curTeam = await teamModel.getTeamInfo(id);
+    if (curTeam) {
+      ctx.body = result(curTeam)
+  
+    } else {
+      ctx.body = result(null, '团队信息不存在', false)
+    }
   }
   
   static async search(ctx){

@@ -3,16 +3,24 @@ const teamModel = require('../modules/team');
 const taskModel = require('../modules/task');
 const statusCode = require('../utils/status-code');
 const result = require('../utils/result');
+const moment = require('moment');
+
+function getList(dayIndex){
+  return taskModel.findTaskList({
+    start: moment().add(dayIndex, 'day').format('YYYY-MM-DD'),
+  })
+}
 
 class TaskController {
   static async add(ctx, next){
     const task = ctx.request.body;
     const user = ctx.state.user;
     if(task) {
-      task.status = 0
       task.userId = user.id
-      task.sortIndex = 1
-      task.tags = task.tags.join(',')
+      const list = await taskModel.findTaskList({
+        userId: user.id
+      })
+      task.sortIndex = list.length
       await taskModel.create(task)
       ctx.body = result(null, '新增待办事项成功')
     }else {
@@ -45,9 +53,25 @@ class TaskController {
   
   static async list(ctx){
     const list = await taskModel.findTaskList();
-    list.map(v=> {
-      v.tags = v.tags.split(',')
-    } )
+    ctx.body = result({
+      list
+    }, '查询成功')
+  }
+  
+
+  
+  static async getFourDay(ctx){
+    const today = await getList(0)
+    const tomorrow = await getList(1)
+    ctx.body = result({
+      list: {today, tomorrow}
+    }, '查询成功')
+  }
+  
+  static async get7Day(ctx){
+    const list = await taskModel.findTaskList({
+    
+    })
     ctx.body = result({
       list
     }, '查询成功')
